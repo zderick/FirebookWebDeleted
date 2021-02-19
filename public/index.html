@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Welcome to Fire Book!</title>
+
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/8.2.1/firebase-app.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/8.2.1/firebase-auth.js"></script>
+    <script defer src="/__/firebase/8.2.1/firebase-database.js"></script>
+    <script defer src="/__/firebase/8.2.1/firebase-firestore.js"></script>
+    <script defer src="/__/firebase/8.2.1/firebase-functions.js"></script>
+    <script defer src="/__/firebase/8.2.1/firebase-messaging.js"></script>
+    <script defer src="/__/firebase/8.2.1/firebase-storage.js"></script>
+    <script defer src="/__/firebase/8.2.1/firebase-analytics.js"></script>
+    <script defer src="/__/firebase/8.2.1/firebase-remote-config.js"></script>
+    <script defer src="/__/firebase/8.2.1/firebase-performance.js"></script>
+    <!-- 
+      initialize the SDK after all desired features are loaded, set useEmulator to false
+      to avoid connecting the SDK to running emulators.
+    -->
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+
+    <style media="screen">
+      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
+      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
+      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
+      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
+      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
+      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
+      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
+      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
+      @media (max-width: 600px) {
+        body, #message { margin-top: 0; background: white; box-shadow: none; }
+        body { border-top: 16px solid #ffa100; }
+      }
+      .button {  margin: 0 15px 0 0; background-color: green; border-radius: 100%; color: white;  float: left;       
+        -webkit-touch-callout: none; /* iOS Safari */
+        -webkit-user-select: none; /* Safari */
+        -khtml-user-select: none; /* Konqueror HTML */
+        -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+        user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */}
+      li { background:ECEFF1;  padding: 15px 15px; }
+      li:nth-child(odd) { background:rgb(212, 211, 211); }
+    </style>
+  </head>
+  <body>
+    <div id="message">
+      <h2>Welcome</h2>
+      <h1>Deleted Todos</h1>
+      <a target="_blank" href="https://firebook2020.web.app/">Fire Book</a>
+    </div>
+    <ul style="list-style: none; padding:0">
+ 
+    </ul>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const loadEl = document.querySelector('#load');
+        
+        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+        // // The Firebase SDK is initialized and available here!
+        var config = {
+    apiKey: "AIzaSyBSHR7jjQaMvIff6FxQZ5ypC0tH9DbS6rM",
+    authDomain: "firebook2020deleted.firebaseapp.com",
+    databaseURL: "https://firebook2020-default-rtdb.firebaseio.com",
+    storageBucket: "firebook2020.appspot.com"
+  };
+  if (!firebase.apps.length) {
+    firebase.initializeApp(config);
+}
+
+        firebase.auth().onAuthStateChanged(user => { });
+
+        var query = firebase.database().ref('test').orderByChild('time');
+        var ul = document.querySelector("ul");
+        
+
+        query.on('child_added', (data) => {
+          if (data.val().complete) {
+          
+          var listItem = document.createElement("li");
+          var button = document.createElement("button");
+          button.textContent = "+";
+          button.id = data.val().key + "button";
+          button.className = "button";
+          button.onclick = function() {restoreTodo(data)};
+          listItem.appendChild(button);
+          listItem.id = data.val().key;
+          listItem.append(data.val().description);
+
+          function restoreTodo(data) {
+            var databaseRef = firebase.database().ref('test');
+            var todo = {
+              key: data.val().key,
+              complete: false,
+              description: data.val().description,
+              time: data.val().time
+            };
+            databaseRef.child(todo.key).update(todo);
+          };
+
+
+          if(ul.childNodes.length > 0) {
+            ul.insertBefore(listItem, ul.childNodes[0]);
+          } else {
+            ul.appendChild(listItem);
+          }
+          }
+        });
+
+        query.on('child_changed', (data) => {
+          console.error(data.val());
+          var li = document.getElementById(data.val().key);
+          if (li != null) {
+            if (data.val().complete == false) {
+              li.parentNode.removeChild(li);
+            } else {
+              li.textContent = data.val().description;
+
+            }
+          }
+        });
+
+        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+        try {
+          let app = firebase.app();
+          let features = [
+            'auth', 
+            'database', 
+            'firestore',
+            'functions',
+            'messaging', 
+            'storage', 
+            'analytics', 
+            'remoteConfig',
+            'performance',
+          ].filter(feature => typeof app[feature] === 'function');
+          // loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
+        } catch (e) {
+          console.error(e);
+          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+        }
+      });
+    </script>
+  </body>
+</html>

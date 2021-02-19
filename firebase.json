@@ -1,0 +1,11 @@
+{
+  "hosting": {
+  	"site": "firebook2020deleted",
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}
